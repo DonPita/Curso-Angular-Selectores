@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CountryService } from '../../services/country.service';
-import { Region } from '../../interfaces/country.interfaces';
+import { Region, SmallCountry, Name } from '../../interfaces/country.interfaces';
 import { switchMap } from 'rxjs';
 
 @Component({
@@ -17,9 +17,11 @@ export class SelectorPageComponent implements OnInit {
     private countryService: CountryService,
   ) { }
 
+  public countriesByRegion: SmallCountry[] = [];
+
   public myForm: FormGroup = this.fb.group({
     region: ['', Validators.required],
-    country: ['', Validators.required],
+    countries: ['', Validators.required],
     borders: ['', Validators.required],
   })
 
@@ -37,8 +39,10 @@ export class SelectorPageComponent implements OnInit {
       .pipe(
         switchMap(region => this.countryService.getCountriesByRegion(region)),
       )
-      .subscribe(country => {
-        console.log({ country })
-      });
+      .subscribe(countries => {
+        this.countriesByRegion = countries.sort((c1, c2) =>
+          c1.name.localeCompare(c2.name)) //Ordenar los paises alfabeticamente.
+      })
   }
 }
+
