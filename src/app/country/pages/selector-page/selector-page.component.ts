@@ -18,7 +18,7 @@ export class SelectorPageComponent implements OnInit {
   ) { }
 
   public countriesByRegion: SmallCountry[] = [];
-  public borders: string[] = [];
+  public borders: SmallCountry[] = [];
 
   public myForm: FormGroup = this.fb.group({
     region: ['', Validators.required],
@@ -55,10 +55,11 @@ export class SelectorPageComponent implements OnInit {
         tap(() => this.myForm.get('border')!.setValue('')), //Poner el valor a string vacio, cuando haces el cambio de region
         filter((value: string) => value.length > 0),
         switchMap(alphacode => this.countryService.getCountryByAlphaCode(alphacode)),
+        switchMap(country => this.countryService.getCountryBordersByCodes(country.borders)),
       )
-      .subscribe(country => {
-        console.log({ borders: country.borders })
-        this.borders = country.borders;
+      .subscribe(countries => {
+        //console.log({ borders: this.borders })
+        this.borders = countries;
       })
     // .subscribe(countries => {
     //   this.countriesByRegion = countries.sort((c1, c2) =>
